@@ -8,3 +8,7 @@ DipOrient "resname SOL" 0 2000 0 0 1
 * `resname SOL`为你要计算偶极矩的分子，应符合VMD中选择语句的要求
 * `0`与`2000`分别为开始和结束统计的帧数
 * `0 0 1`为需要统计与偶极矩夹角的矢量
+
+### 注意
+* 运行上述脚本前需使VMD读入原子电荷，可使用<a href="http://bbs.keinsci.com/thread-5417-1-1.html" target="_blank">方法一</a>和<a href="http://bbs.keinsci.com/thread-37839-1-1.html" target="_blank">方法二</a>。
+* gmx产生的轨迹文件需使用`-pbc mol`处理，否则结果可能会有问题。
