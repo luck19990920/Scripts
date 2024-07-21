@@ -1,4 +1,4 @@
-`DipOrient.tcl`是使用VMD计算某种分子的偶极矩与某矢量的余弦值的脚本。
+`DipOrient.tcl`是使用VMD计算某种分子的偶极矩与某矢量夹角的脚本。
 ### 使用方法
 若在windows系统下，将`DipOrient.tcl`放在VMD的安装目录下，若在Linux系统下，则将`DipOrient.tcl`放在结构文件同级目录下。随后，在VMD中输入`source DipOrient.tcl`。最后，输入以下类似的命令得到结果文件`dipz.txt`：
 ``` tcl

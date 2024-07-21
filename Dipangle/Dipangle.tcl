@@ -1,4 +1,5 @@
 # Written by Jian Zhang (jian_zhang@cug.edu.cn)
+# Last update: 2024-Jul-21 
 proc Dipangle {selIon dist_1 dist_2} {
     set n [ molinfo top get numframes ]
     set result [open dip.txt w]

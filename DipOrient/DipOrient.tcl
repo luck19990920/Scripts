@@ -1,4 +1,5 @@
 # Written by Jian Zhang (jian_zhang@cug.edu.cn)
+# Last update: 2024-Jul-21
 proc DipOrient {sel firstFrame lastFrame x y z} {
     proc unique_list {list} {
     array set uniq [list]
@@ -14,7 +15,7 @@ proc DipOrient {sel firstFrame lastFrame x y z} {
         puts "[expr $i-$firstFrame+1]/[expr $lastFrame - $firstFrame]"
         foreach j [ unique_list [$obj get fragment] ] {
             set dip [measure dipole [atomselect top "fragment $j" frame $i ]]
-            puts $result "[expr [vecdot $zvec $dip]/[expr [veclength $zvec] * [veclength $dip]]]"
+            puts $result "[expr acos([expr [vecdot $zvec $dip]/[expr [veclength $zvec] * [veclength $dip]]])]"
         }
     }
     close $result
