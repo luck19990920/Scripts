@@ -5,3 +5,4 @@
 * <a href="/interval_aver/README.md" target="blank">`interval_aver`</a>: 用于进行区间平均的python类
 * <a href="/accromem/README.md" target="blank">`accromem`</a>: 统计离子跨膜数量的TCL脚本
 * <a href="/RotationPy/README.md" target="blank">`RotationPy`</a>: 在坐标系中旋转分子的python类
+* <a href="/modGro/README.md" target="blank">`modGro`</a>: 用于修改`GROMACS`中的`gro`文件的工具
