@@ -4,7 +4,7 @@
 运行`modGro.exe`后可以看到如下的内容：
 ```
 modGro: A tool for modifying gro file
-Version 1.0, release date: 2024-Nov-27
+Version 1.0, release date: 2024-Dec-4
 Programmed by Jian Zhang (jian_zhang@cug.edu.cn)
 
 Please input the file path of .gro
@@ -13,14 +13,17 @@ Please input the file path of .gro
 ```
 The number of atoms: 2716
 The number of residues: 916
+
+MOL: 916
+
 0 Save
 1 Change residue name
 2 Change atom name
 ```
-上述的内容表明，该`gro`文件中含有2716个原子，含有916个残基。
+上述的内容表明，该`gro`文件中含有2716个原子，含有916个残基。并且916个残基的残基名都为`MOL`
 * 若键入`0`:将最新的`gro`文件内容输出至目录下的`fix.gro`中
-* 若键入`1`:则输入需要修改残基名的残基的开始(包括)和结束(不包括)的序号(从1开始)和需要修改成的名字
-* 若键入`2`:则输入需要修改原子名的残基的开始(包括)和结束(不包括)的序号(从1开始)和需要修改成的原子名
+* 若键入`1`:则输入需要修改残基名的残基的开始和结束的序号(从1开始)和需要修改成的名字
+* 若键入`2`:则输入需要修改原子名的残基的开始和结束的序号(从1开始)和需要修改成的原子名
 
 ### 示例
 更改前的.gro文件的部分内容如下：
@@ -50,11 +53,11 @@ Built with Packmol
 ```
 1          // 修改残基名
 1          // 从1号残基开始修改
-6          // 修改到6号(不包括)残基
+5          // 修改到6号(不包括)残基
 SOL        // 将残基名修改为SOL
 2          // 修改原子名
 1          // 从1号残基开始修改
-2          // 修改到2号(不包括)残基
+1          // 修改到2号(不包括)残基
 test1      // 第一个原子的原子名
 test2      // 第二个原子的原子名
 test3      // 第三个原子的原子名

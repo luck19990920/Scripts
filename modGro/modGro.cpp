@@ -30,6 +30,8 @@ public:
         this->file_path = file_path;
         this->read_gro();
     }
+    std::vector<std::string> rename_vector;                                            // 存储残基名的数组
+    std::vector<int> rename_number_vector;                                             // 存储残基个数的数组
     std::string file_path;                                                             // gro文件路径
     std::map<int, GRO_reside> dict;                                                    // 存储gro中信息的字典 
     int atom_number;                                                                   // gro中的原子数
@@ -41,6 +43,8 @@ public:
     void write_gro(std::string file_path);                                             // 输出gro文件信息
     std::string Trim(std::string s);                                                   // 去除字符串前后的空格
     std::vector<std::string> splitString(std::string s);                               // 根据空格将字符串进行分割
+    std::string Delete_prefix_number(std::string s);                                   // 去除字符串前面的数字
+    void Show_resname_inf();                                                           // 显示残基数量的相关信息
 };
 
 std::string GRO::Trim(std::string s)
@@ -51,18 +55,23 @@ std::string GRO::Trim(std::string s)
     return s;
 }
 
+std::string GRO::Delete_prefix_number(std::string s)
+{
+    return s.substr(this->resname_number_index(s), s.size() - this->resname_number_index(s));
+}
+
 std::vector<std::string> GRO::splitString(std::string s)
 {
     s = this->Trim(s);
     std::vector<std::string> result;
-    int i, flag=0;
+    int i, flag = 0;
     std::string result_str = "";
-    for (i=0; i < s.size(); i++)
+    for (i = 0; i < s.size(); i++)
     {
         std::string s_tmp(1, s[i]);     // 把char转换为string
         if (i == 0)  result_str += s_tmp;
         else {
-            if ((s_tmp == " ") && (flag == 0)){
+            if ((s_tmp == " ") && (flag == 0)) {
                 flag = 1;
                 result.push_back(result_str);
                 result_str = "";
@@ -74,7 +83,7 @@ std::vector<std::string> GRO::splitString(std::string s)
             result_str += s_tmp;
             flag = 0;
             if (i == (s.size() - 1))  result.push_back(result_str);
-        } 
+        }
     }
     return result;
 }
@@ -100,16 +109,17 @@ void GRO::read_gro()
     int resname_index = 0;
     std::vector<std::string> line_list;
 
-    for (int i=0; i < this->atom_number; i++) {
+    for (int i = 0; i < this->atom_number; i++) {
         std::getline(in, line);
         line_list = this->splitString(line);
-        
+
         if ((resname_tmp == " ") || (line_list[0] != resname_tmp))   // 写入一个新残基的信息
         {
             resname_index++;
             resname_tmp = line_list[0];
             GRO_reside G = GRO_reside();
-            G.resname = resname_tmp.substr(this->resname_number_index(resname_tmp), resname_tmp.size() - this->resname_number_index(resname_tmp));
+            //G.resname = resname_tmp.substr(this->resname_number_index(resname_tmp), resname_tmp.size() - this->resname_number_index(resname_tmp));
+            G.resname = this->Delete_prefix_number(resname_tmp);
             std::vector<std::string> atom_tmp;
             atom_tmp.push_back(line_list[1]);
             G.atom_name = atom_tmp;
@@ -134,17 +144,18 @@ void GRO::read_gro()
     }
     std::getline(in, line);
     this->dimension = line;
+    
 }
 
 void GRO::replace_resname(int start, int end, std::string resname)
 {
-    for (int i = start; i < end; i++)
+    for (int i = start; i <= end; i++)
         this->dict[i].resname = resname;
 }
 
 void GRO::replace_atom_name(int start, int end, std::vector<std::string> atom_name)
 {
-    for (int i = start; i < end; i++)
+    for (int i = start; i <= end; i++)
         this->dict[i].atom_name = atom_name;
 }
 
@@ -158,12 +169,12 @@ void GRO::write_gro(std::string file_path)
         int atom_index = 1, i, j;
         for (i = 0; i < this->dict.size(); i++) {
             for (j = 0; j < this->dict[i + 1].atom_name.size(); j++) {
-                outputFile << std::right << std::setw(8) << std::to_string(i + 1) + this->dict[i + 1].resname <<  \
-                std::right << std::setw(7) << this->dict[i + 1].atom_name[j] <<  \
-                std::right << std::setw(5) << atom_index << \
-                std::right << std::setw(8) << std::fixed << std::setprecision(3) << this->dict[i + 1].coor_vector[j].x << \
-                std::right << std::setw(8) << this->dict[i + 1].coor_vector[j].y << \
-                std::right << std::setw(8) << this->dict[i + 1].coor_vector[j].z << std::endl;
+                outputFile << std::right << std::setw(8) << std::to_string(i + 1) + this->dict[i + 1].resname << \
+                    std::right << std::setw(7) << this->dict[i + 1].atom_name[j] << \
+                    std::right << std::setw(5) << atom_index << \
+                    std::right << std::setw(8) << std::fixed << std::setprecision(3) << this->dict[i + 1].coor_vector[j].x << \
+                    std::right << std::setw(8) << this->dict[i + 1].coor_vector[j].y << \
+                    std::right << std::setw(8) << this->dict[i + 1].coor_vector[j].z << std::endl;
                 atom_index++;
             }
         }
@@ -171,11 +182,35 @@ void GRO::write_gro(std::string file_path)
     }
 }
 
+void GRO::Show_resname_inf()
+{
+    std::string resname_tmp1 = this->dict[1].resname;
+    this->rename_vector.push_back(resname_tmp1);
+    int resname_number_tmp = 0;
+    for (int i = 1; i <= this->dict.size(); i++) {
+        if (this->dict[i].resname == resname_tmp1)     resname_number_tmp++;
+        else {
+            this->rename_vector.push_back(this->dict[i].resname);
+            resname_tmp1 = this->dict[i].resname;
+            this->rename_number_vector.push_back(resname_number_tmp);
+            resname_number_tmp = 1;
+        }
+    }
+    this->rename_number_vector.push_back(resname_number_tmp);
+    std::cout << std::endl;
+    for (int i = 0; i < this->rename_number_vector.size(); i++)
+        std::cout << this->rename_vector[i] << ": " << this->rename_number_vector[i] << std::endl;
+    std::cout << std::endl;
+    this->rename_number_vector.clear();
+    this->rename_vector.clear();
+
+}
+
 int main()
 {
     std::cout << "modGro: A tool for modifying gro file" << std::endl;
-    std::cout << "Version 1.0, release date: 2024-Nov-27" << std::endl;
-    std::cout << "Programmed by Jian Zhang (jian_zhang@cug.edu.cn)" << std::endl;
+    std::cout << "Version 1.0, release date: 2024-Dec-4" << std::endl;
+    std::cout << "Programmed by Jian Zhang (jian_zhang@cug.edu.cn)" << std::endl << std::endl;
     std::cout << "Please input the file path of .gro" << std::endl;
     std::string file_path, input_index;
     std::cin >> file_path;
@@ -183,8 +218,8 @@ int main()
     std::cout << std::endl;
     std::cout << "The number of atoms: " << gro_object.atom_number << std::endl;
     std::cout << "The number of residues: " << gro_object.dict.size() << std::endl;
-    std::cout << std::endl;
     while (true) {
+        gro_object.Show_resname_inf();
         std::cout << "0 Save" << std::endl << "1 Change residue name" << std::endl << "2 Change atom name" << std::endl;
         std::cin >> input_index;
         if (input_index == "0")
@@ -198,32 +233,45 @@ int main()
             std::string resname_change;
             std::cout << "Please enter the starting value (from 1) of the serial number of the residue whose name is to be changed" << std::endl;
             std::cin >> start;
-            std::cout << "Please enter the ending value for the serial number of the residue for which the name change is required (not included)" << std::endl;
+            std::cout << "Please enter the ending value for the serial number of the residue for which the name change is required" << std::endl;
             std::cin >> end;
-            std::cout << "Please enter the changed residue name" << std::endl;
-            std::cin >> resname_change;
-            gro_object.replace_resname(start, end, resname_change);
+            
+            if ((start <= end) && (start > 0) && (end <= gro_object.dict.size()))
+            {
+                std::cout << "Please enter the changed residue name" << std::endl;
+                std::cin >> resname_change;
+                gro_object.replace_resname(start, end, resname_change);
+            }
+            else 
+            {
+                std::cout << "Invalid input" << std::endl;
+                continue;
+            }
+            
         }
         else if (input_index == "2")
         {
             int start, end, i;
             std::string atom_name_change;
             std::vector<std::string> atom_name;
-            std::cout << "Please enter the serial number of the beginning of the residue whose atomic name needs to be changed." << std::endl;
+            std::cout << "Please enter the starting value (from 1) of the serial number of the residue whose atomic name needs to be changed." << std::endl;
             std::cin >> start;
-            std::cout << "Please enter the serial number of the ending of the residue whose atomic name needs to be changed." << std::endl;
+            std::cout << "Please enter the ending value for the serial number of the residue whose atomic name needs to be changed." << std::endl;
             std::cin >> end;
-            std::cout << "The number of atoms in these residues: " << gro_object.dict[start].atom_name.size() << std::endl << "Please enter the changed atomic name" << std::endl;
-            for (i = 0; i < gro_object.dict[start].atom_name.size(); i++)
+            if ((start <= end) && (start > 0) && (end <= gro_object.dict.size()))
             {
-                std::cin >> atom_name_change;
-                atom_name.push_back(atom_name_change);
+                std::cout << "The number of atoms in these residues: " << gro_object.dict[start].atom_name.size() << std::endl << "Please enter the changed atomic name" << std::endl;
+                for (i = 0; i < gro_object.dict[start].atom_name.size(); i++)
+                {
+                    std::cin >> atom_name_change;
+                    atom_name.push_back(atom_name_change);
+                }
+                gro_object.replace_atom_name(start, end, atom_name);
             }
-            gro_object.replace_atom_name(start, end, atom_name);
+            else std::cout << "Invalid input" << std::endl;
         }
         else  std::cout << "Invalid input" << std::endl;
     }
 
     return 0;
 }
-
