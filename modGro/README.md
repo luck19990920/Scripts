@@ -1,4 +1,4 @@
-`modGro`是用于修改`GROMACS`中的`gro`文件的工具。`modGro.py`是`modGro`的Python源代码，`modGro.cpp`是`modGro`的C++源代码，`modGro.exe`是`modGro.cpp`编译后得到的可执行文件， <br>
+`modGro`是用于修改`GROMACS`中的`gro`文件的工具。`modGro.py`是`modGro`的Python源代码，`modGro.cpp`是`modGro`的C++源代码，`modGro.exe`是`modGro.cpp`编译后得到的Windows可执行文件，`modGro`是`modGro.cpp`编译后得到的Linux可执行文件 <br>
 
 ### 使用方法
 运行`modGro.exe`后可以看到如下的内容：
